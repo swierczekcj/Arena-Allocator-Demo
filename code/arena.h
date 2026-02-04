@@ -23,6 +23,9 @@ typedef i32 b32;
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define ALIGN_UP_POW2(n, p) (((u64)(n) + ((u64)(p) - 1)) & (~((u64)(p) - 1)))
 
+#define ARENA_BASE_POS (sizeof(arena))
+#define ARENA_ALIGN (sizeof(void*))
+
 typedef struct {
     u64 reserve_size;
     u64 commit_size;
