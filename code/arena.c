@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "arena.h"
 
 arena* arena_create(u64 reserve_size, u64 commit_size){
@@ -7,7 +8,7 @@ arena* arena_create(u64 reserve_size, u64 commit_size){
     reserve_size = ALIGN_UP_POW2(reserve_size, pgsize);
     commit_size = ALIGN_UP_POW2(commit_size, pgsize);
 
-    arena* ar = mem_resereve(reserve_size);
+    arena* ar = (arena*)mem_reserve(reserve_size);
     if (ar == NULL) {
         fprintf(stderr, "Error Reserving VA Space");
         exit(EXIT_FAILURE);
@@ -23,10 +24,6 @@ arena* arena_create(u64 reserve_size, u64 commit_size){
     ar->commit_pos = commit_size;
 
     return ar;
-}
-
-b32 arena_destroy(arena* ar) {
-    return plat_mem_release(ar, ar->reserve_size);
 }
 
 void* arena_push(arena* ar, u64 size, b32 non_zero){
