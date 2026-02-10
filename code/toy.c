@@ -104,7 +104,7 @@ Node* parseEx(arena* ar, char* str[200], u8* idxptr){
 }
 
 Node* parseExpr(arena* ar, Node* asker, char* str[200], u8* idxptr){
-    char curr = str[*idxptr];
+    char curr = *str[*idxptr];
     if(curr == '+' || curr == '-'){
         Node* parent = arena_push(ar, sizeof(Node));
         asker->parent = parent;
@@ -130,7 +130,7 @@ Node* parseTerm(arena* ar, char* str[200], u8* idxptr){
 }
 
 Node* parseTermpr(arena* ar, Node* asker, char* str[200], u8* idxptr){
-    char curr = str[*idxptr];
+    char curr = *str[*idxptr];
     if(curr == '*' || curr == '/'){
         Node* parent = arena_push(ar, sizeof(Node));
         asker->parent = parent;
@@ -150,7 +150,7 @@ Node* parseTermpr(arena* ar, Node* asker, char* str[200], u8* idxptr){
 }
 
 Node* parseFactor(arena* ar, char* str[200], u8* idxptr){
-    char curr = str[*idxptr];
+    char curr = *str[*idxptr];
     if(curr == '('){
         Node* expr = parseEx(ar, str, idxptr);
         if(curr == ')'){
@@ -160,7 +160,7 @@ Node* parseFactor(arena* ar, char* str[200], u8* idxptr){
     } else {
         i32 inp;
         i32 count;
-        sscanf(str + *idxptr, "%d%n", &inp, &count); 
+        sscanf(&str + *idxptr, "%d%n", &inp, &count); 
         *idxptr += count; //skip over the consumed int characters
         Node* intnode = (Node*) arena_push(ar, sizeof(Node));
         intnode->kind = NODE_NUMBER;
