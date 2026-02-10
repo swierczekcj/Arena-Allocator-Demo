@@ -26,7 +26,7 @@ arena* arena_create(u64 reserve_size, u64 commit_size){
     return ar;
 }
 
-void* arena_push(arena* ar, u64 size, b32 non_zero){
+void* arena_push(arena* ar, u64 size){
     //ensures our allocations start aligned with the word size
     u64 pos_align = ALIGN_UP_POW2(ar->pos, ARENA_ALIGN);
     u64 new_pos = pos_align + size;

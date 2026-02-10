@@ -36,7 +36,7 @@ typedef struct {
 
 arena* arena_create(u64 reserve_size, u64 commit_size);
 b32 arena_destroy(arena* ar);
-void* arena_push(arena* ar, u64 size, b32 non_zero);
+void* arena_push(arena* ar, u64 size);
 void arena_pop(arena* ar, u64 size);
 void arena_pop_to(arena* ar, u64 pos);
 void arena_clear(arena* ar);
