@@ -162,6 +162,7 @@ Node* parseTermpr(arena* ar, Node* asker, char* str, u8* idxptr){
 Node* parseFactor(arena* ar, char* str, u8* idxptr){
     char curr = str[*idxptr];
     if(curr == '('){
+        (*idxptr)++;
         Node* expr = parseEx(ar, str, idxptr);
         if(curr == ')'){
             (*idxptr)++;
@@ -171,6 +172,7 @@ Node* parseFactor(arena* ar, char* str, u8* idxptr){
         i32 inp;
         i32 count;
         sscanf(str + *idxptr, "%d%n", &inp, &count); 
+        printf("Scanned Integer %d\n", inp);
         *idxptr += count; //skip over the consumed int characters
         Node* intnode = (Node*) arena_push(ar, sizeof(Node));
         intnode->kind = NODE_NUMBER;
