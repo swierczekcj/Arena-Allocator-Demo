@@ -124,7 +124,6 @@ Node* parseExpr(arena* ar, Node* asker, char* str, u8* idxptr){
         (*idxptr)++;
         parent->left = asker;
         parent->right = parseTerm(ar, str, idxptr);
-        (*idxptr)++;
         Node* gpar = parseExpr(ar, parent, str, idxptr);
         if(gpar == NULL) return parent;
         return gpar;
@@ -150,7 +149,6 @@ Node* parseTermpr(arena* ar, Node* asker, char* str, u8* idxptr){
         (*idxptr)++;
         parent->left = asker;
         parent->right = parseFactor(ar, str, idxptr);
-        (*idxptr)++;
         Node* gpar = parseTermpr(ar, parent, str, idxptr);
         if(gpar == NULL) return parent;
         return gpar;
@@ -162,9 +160,11 @@ Node* parseTermpr(arena* ar, Node* asker, char* str, u8* idxptr){
 Node* parseFactor(arena* ar, char* str, u8* idxptr){
     char curr = str[*idxptr];
     if(curr == '('){
+        printf("Parenthesis found\n");
         (*idxptr)++;
         Node* expr = parseEx(ar, str, idxptr);
-        if(curr == ')'){
+        if(str[*idxptr] == ')'){
+            printf("Closing Parenthesis found\n");
             (*idxptr)++;
         }
         return expr;
