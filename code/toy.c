@@ -61,12 +61,14 @@ int main(){
         scanf("%200[^\n]%*c", str);
         if (strcmp(str, "exit") == 0) {
           printf("Exiting...\n");
+          arena_destroy(ar);
           exit(EXIT_SUCCESS);
         }
         u8 idx = 0;
         u8* p = &idx;
         i32 res = parse(ar, str, p);
         fprintf(stdout, "Evaluates to %d \n", res);
+        //assymetrically deallocate all of our tree nodes
         arena_clear(ar);
     }   
 }
