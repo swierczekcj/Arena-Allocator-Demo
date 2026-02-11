@@ -24,13 +24,13 @@ typedef struct Node {
     i32 val;
 } Node;
 
-int parse(arena* ar, char* str[200], u8* idxptr);
+int parse(arena* ar, char* str, u8* idxptr);
 int eval(Node* node);
-Node* parseEx(arena* ar, char* str[200], u8* idxptr);
-Node* parseExpr(arena* ar, Node* asker, char* str[200], u8* idxptr);
-Node* parseTerm(arena* ar, char* str[200], u8* idxptr);
-Node* parseTermpr(arena* ar, Node* asker, char* str[200], u8* idxptr);
-Node* parseFactor(arena* ar, char* str[200], u8* idxptr);
+Node* parseEx(arena* ar, char* str, u8* idxptr);
+Node* parseExpr(arena* ar, Node* asker, char* str, u8* idxptr);
+Node* parseTerm(arena* ar, char* str, u8* idxptr);
+Node* parseTermpr(arena* ar, Node* asker, char* str, u8* idxptr);
+Node* parseFactor(arena* ar, char* str, u8* idxptr);
 
 Operator getOperator(char c){
     switch (c){
@@ -58,38 +58,48 @@ int main(){
     while(1) { 
         char str[200];
         printf("New expression: ");
-        scanf("%200[^\n]", &str);
+        scanf("%200[^\n]%*c", str);
         if (strcmp(str, "exit") == 0) {
           printf("Exiting...\n");
           exit(EXIT_SUCCESS);
         }
         u8 idx = 0;
         u8* p = &idx;
-        i32 res = parse(ar, &str, p);
+        i32 res = parse(ar, str, p);
         fprintf(stdout, "Evaluates to %d \n", res);
         arena_clear(ar);
     }   
 }
 
 //Buffer, pointer to index of buffer
-int parse(arena* ar, char* str[200], u8* idxptr){
+int parse(arena* ar, char* str, u8* idxptr){
     Node* root = parseEx(ar, str, idxptr);
     return eval(root);
 }
 
 int eval(Node* node){
+    i32 res;
     if(node->kind == NODE_NUMBER){
+        printf("Node Val %d\n", node->val);
         return node->val;
     } else {
         switch(node->op){
             case OP_ADD:
-                return eval(node->left) + eval(node->right);
+                res = eval(node->left) + eval(node->right);
+                printf("Sum %d\n", res);
+                return res;
             case OP_SUB:
-                return eval(node->left) - eval(node->right);
+                res = eval(node->left) - eval(node->right);
+                printf("Dif %d\n", res);
+                return res;
             case OP_MUL:
-                return eval(node->left) * eval(node->right);
+                res = eval(node->left) * eval(node->right);
+                printf("Prod %d\n", res);
+                return res;
             case OP_DIV:
-                return eval(node->left) / eval(node->right);
+                res = eval(node->left) / eval(node->right);
+                printf("Quo %d\n", res);
+                return res;
             default:
                 fprintf(stderr, "Improper Node operation\n");
                 exit(EXIT_FAILURE);
@@ -97,24 +107,24 @@ int eval(Node* node){
     }
 }
 
-Node* parseEx(arena* ar, char* str[200], u8* idxptr){
+Node* parseEx(arena* ar, char* str, u8* idxptr){
     Node* left = parseTerm(ar, str, idxptr);
     Node* parent = parseExpr(ar, left, str, idxptr);
+    if (parent == NULL) return left;
     return parent;
 }
 
-Node* parseExpr(arena* ar, Node* asker, char* str[200], u8* idxptr){
-    char curr = *str[*idxptr];
+Node* parseExpr(arena* ar, Node* asker, char* str, u8* idxptr){
+    char curr = str[*idxptr];
     if(curr == '+' || curr == '-'){
         Node* parent = arena_push(ar, sizeof(Node));
         asker->parent = parent;
-
         parent->kind = NODE_OPERATOR;
         parent->op = getOperator(curr);
-        idxptr++;
+        (*idxptr)++;
         parent->left = asker;
         parent->right = parseTerm(ar, str, idxptr);
-        idxptr++;
+        (*idxptr)++;
         Node* gpar = parseExpr(ar, parent, str, idxptr);
         if(gpar == NULL) return parent;
         return gpar;
@@ -123,24 +133,24 @@ Node* parseExpr(arena* ar, Node* asker, char* str[200], u8* idxptr){
     }
 }
 
-Node* parseTerm(arena* ar, char* str[200], u8* idxptr){
+Node* parseTerm(arena* ar, char* str, u8* idxptr){
     Node* left = parseFactor(ar, str, idxptr);
     Node* parent = parseTermpr(ar, left, str, idxptr);
+    if (parent == NULL) return left;
     return parent;
 }
 
-Node* parseTermpr(arena* ar, Node* asker, char* str[200], u8* idxptr){
-    char curr = *str[*idxptr];
+Node* parseTermpr(arena* ar, Node* asker, char* str, u8* idxptr){
+    char curr = str[*idxptr];
     if(curr == '*' || curr == '/'){
         Node* parent = arena_push(ar, sizeof(Node));
         asker->parent = parent;
-
         parent->kind = NODE_OPERATOR;
         parent->op = getOperator(curr);
-        *idxptr++;
+        (*idxptr)++;
         parent->left = asker;
         parent->right = parseFactor(ar, str, idxptr);
-        *idxptr++;
+        (*idxptr)++;
         Node* gpar = parseTermpr(ar, parent, str, idxptr);
         if(gpar == NULL) return parent;
         return gpar;
@@ -149,18 +159,18 @@ Node* parseTermpr(arena* ar, Node* asker, char* str[200], u8* idxptr){
     }
 }
 
-Node* parseFactor(arena* ar, char* str[200], u8* idxptr){
-    char curr = *str[*idxptr];
+Node* parseFactor(arena* ar, char* str, u8* idxptr){
+    char curr = str[*idxptr];
     if(curr == '('){
         Node* expr = parseEx(ar, str, idxptr);
         if(curr == ')'){
-            *idxptr++;
+            (*idxptr)++;
         }
         return expr;
     } else {
         i32 inp;
         i32 count;
-        sscanf(&str + *idxptr, "%d%n", &inp, &count); 
+        sscanf(str + *idxptr, "%d%n", &inp, &count); 
         *idxptr += count; //skip over the consumed int characters
         Node* intnode = (Node*) arena_push(ar, sizeof(Node));
         intnode->kind = NODE_NUMBER;
