@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
 
-## This is a simple script for compiling the code
-## outside an IDE. If the project gets bigger we
-## can investigate using Make, CMake, Meson,
-## Ninja, etc...
-
-# Always put your script main function at bottom,
-# see https://arongriffis.com/2023-11-18-bash-main
-
-# We'll explicitly echo anything we want on screen.
 set x
 
 check_os() {
